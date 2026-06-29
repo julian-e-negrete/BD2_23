@@ -277,8 +277,8 @@ PRINT 'SECCION 8: PRESTAMO Y DEVOLUCION (via SPs)';
 GO
 
 PRINT '-- 8.RESET: limpiar prestamos de prueba y dejar todos los ejemplares Disponibles --';
-DELETE FROM DEVOLUCION WHERE IDPrestamo >= 6;
-DELETE FROM PRESTAMO   WHERE IDPrestamo >= 6;
+DELETE FROM DEVOLUCION WHERE IDPrestamo >= 7;
+DELETE FROM PRESTAMO   WHERE IDPrestamo >= 7;
 UPDATE EJEMPLAR SET IDEstado = 1;
 PRINT 'OK - base reseteada';
 PRINT '';

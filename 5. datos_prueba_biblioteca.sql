@@ -129,13 +129,15 @@ SET IDENTITY_INSERT USUARIO OFF;
 GO
 
 -- PRESTAMO (los triggers cambian el estado del ejemplar a 'Prestado' = 2)
+-- Prestamo 6: vencido y sin devolucion, sirve para probar vw_PrestamosAtrasados
 SET IDENTITY_INSERT PRESTAMO ON;
 INSERT INTO PRESTAMO (IDPrestamo, IDUsuario, IDEjemplar, FechaPrestamo, FechaDevolucionEstimada) VALUES
     (1, 2, 3,  '2026-06-01', '2026-06-15'),
     (2, 3, 6,  '2026-06-10', '2026-06-24'),
     (3, 4, 11, '2026-06-20', '2026-07-04'),
     (4, 5, 14, '2026-06-25', '2026-07-09'),
-    (5, 7, 18, '2026-06-27', '2026-07-11');
+    (5, 7, 18, '2026-06-27', '2026-07-11'),
+    (6, 8, 2,  '2026-05-01', '2026-05-15');
 SET IDENTITY_INSERT PRESTAMO OFF;
 GO
 

@@ -1,0 +1,17 @@
+¡Saludaciones, nobles almas y honorables personas que estas letras contempláis!
+
+Sed bienvenidos a este humilde compendio de pergaminos... digo, archivos, preparados con diligencia para facilitar vuestra empresa.
+
+Sabed que los manuscritos de lenguaje SQL han sido nombrados siguiendo el sagrado orden en que deben ser ejecutados. El número que antecede a cada nombre no es mero adorno, sino guía fiel para evitar el caos y la desgracia.
+
+El orden es el siguiente:
+
+1. create_biblioteca – Donde se erige el reino sobre el cual todo habrá de sostenerse.
+2. procedimientos_almacenados_biblioteca – Donde se otorgan las artes y saberes que servirán al reino.
+Y así sucesivamente... – Siguiendo siempre la numeración indicada en el nombre de cada archivo.
+
+Os exhorto, por el honor de vuestra estirpe y la estabilidad del reino, a no alterar este orden, pues hacerlo podría invocar errores, infortunios y otros males dignos de las crónicas más oscuras.
+
+Que vuestra ejecución sea próspera, vuestros datos permanezcan íntegros y que los dioses de las bases de datos os concedan una instalación libre de excepciones.
+
+Escrito con la mejor intención para todo caballero, dama o escudero que deba restaurar este noble proyecto.

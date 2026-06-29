@@ -310,11 +310,14 @@ PRINT '';
 GO
 
 -- 8.1 a 8.6 en un solo batch para mantener @IDP entre tests
+DECLARE @Hoy       DATE = CAST(GETDATE() AS DATE);
+DECLARE @FechaVenc DATE = DATEADD(DAY, 21, CAST(GETDATE() AS DATE));
+
 PRINT '-- 8.1 Insertar PRESTAMO valido (usuario 2, ejemplar 1) --';
 EXEC sp_InsertarPrestamo
     @IDUsuario               = 2,
     @IDEjemplar              = 1,
-    @FechaDevolucionEstimada = DATEADD(DAY, 21, CAST(GETDATE() AS DATE));
+    @FechaDevolucionEstimada = @FechaVenc;
 DECLARE @IDP INT = IDENT_CURRENT('PRESTAMO');
 PRINT 'OK - Prestamo creado, ID = ' + CAST(@IDP AS VARCHAR(10));
 PRINT '';
@@ -328,7 +331,7 @@ BEGIN TRY
     EXEC sp_InsertarPrestamo
         @IDUsuario               = 3,
         @IDEjemplar              = 1,
-        @FechaDevolucionEstimada = DATEADD(DAY, 21, CAST(GETDATE() AS DATE));
+        @FechaDevolucionEstimada = @FechaVenc;
     PRINT '>> Sin error (inesperado)';
 END TRY
 BEGIN CATCH
@@ -341,7 +344,7 @@ BEGIN TRY
     EXEC sp_InsertarPrestamo
         @IDUsuario               = 999,
         @IDEjemplar              = 2,
-        @FechaDevolucionEstimada = DATEADD(DAY, 21, CAST(GETDATE() AS DATE));
+        @FechaDevolucionEstimada = @FechaVenc;
     PRINT '>> Sin error (inesperado)';
 END TRY
 BEGIN CATCH
@@ -354,7 +357,7 @@ BEGIN TRY
     EXEC sp_InsertarPrestamo
         @IDUsuario               = 2,
         @IDEjemplar              = 999,
-        @FechaDevolucionEstimada = DATEADD(DAY, 21, CAST(GETDATE() AS DATE));
+        @FechaDevolucionEstimada = @FechaVenc;
     PRINT '>> Sin error (inesperado)';
 END TRY
 BEGIN CATCH
@@ -365,7 +368,7 @@ PRINT '';
 PRINT '-- 8.5 Devolver el prestamo correctamente --';
 EXEC sp_InsertarDevolucion
     @IDPrestamo      = @IDP,
-    @FechaDevolucion = CAST(GETDATE() AS DATE),
+    @FechaDevolucion = @Hoy,
     @Observaciones   = 'Devuelto en buen estado';
 PRINT 'OK - Devolucion registrada';
 PRINT '';
@@ -378,7 +381,7 @@ PRINT '-- 8.6 Intentar devolver el mismo prestamo dos veces (debe fallar) --';
 BEGIN TRY
     EXEC sp_InsertarDevolucion
         @IDPrestamo      = @IDP,
-        @FechaDevolucion = CAST(GETDATE() AS DATE),
+        @FechaDevolucion = @Hoy,
         @Observaciones   = 'Doble devolucion';
     PRINT '>> Sin error (inesperado)';
 END TRY
@@ -389,10 +392,11 @@ PRINT '';
 GO
 
 PRINT '-- 8.7 Devolucion con fecha anterior a la fecha del prestamo (debe fallar) --';
+DECLARE @FechaVenc2 DATE = DATEADD(DAY, 21, CAST(GETDATE() AS DATE));
 EXEC sp_InsertarPrestamo
     @IDUsuario               = 3,
     @IDEjemplar              = 4,
-    @FechaDevolucionEstimada = DATEADD(DAY, 21, CAST(GETDATE() AS DATE));
+    @FechaDevolucionEstimada = @FechaVenc2;
 DECLARE @IDP2 INT = IDENT_CURRENT('PRESTAMO');
 PRINT 'Prestamo auxiliar creado, ID = ' + CAST(@IDP2 AS VARCHAR(10));
 

@@ -312,13 +312,14 @@ GO
 -- 8.1 a 8.6 en un solo batch para mantener @IDP entre tests
 DECLARE @Hoy       DATE = CAST(GETDATE() AS DATE);
 DECLARE @FechaVenc DATE = DATEADD(DAY, 21, CAST(GETDATE() AS DATE));
+DECLARE @IDP       INT;
 
 PRINT '-- 8.1 Insertar PRESTAMO valido (usuario 2, ejemplar 1) --';
 EXEC sp_InsertarPrestamo
     @IDUsuario               = 2,
     @IDEjemplar              = 1,
     @FechaDevolucionEstimada = @FechaVenc;
-DECLARE @IDP INT = IDENT_CURRENT('PRESTAMO');
+SET @IDP = IDENT_CURRENT('PRESTAMO');
 PRINT 'OK - Prestamo creado, ID = ' + CAST(@IDP AS VARCHAR(10));
 PRINT '';
 
@@ -393,11 +394,12 @@ GO
 
 PRINT '-- 8.7 Devolucion con fecha anterior a la fecha del prestamo (debe fallar) --';
 DECLARE @FechaVenc2 DATE = DATEADD(DAY, 21, CAST(GETDATE() AS DATE));
+DECLARE @IDP2       INT;
 EXEC sp_InsertarPrestamo
     @IDUsuario               = 3,
     @IDEjemplar              = 4,
     @FechaDevolucionEstimada = @FechaVenc2;
-DECLARE @IDP2 INT = IDENT_CURRENT('PRESTAMO');
+SET @IDP2 = IDENT_CURRENT('PRESTAMO');
 PRINT 'Prestamo auxiliar creado, ID = ' + CAST(@IDP2 AS VARCHAR(10));
 
 BEGIN TRY

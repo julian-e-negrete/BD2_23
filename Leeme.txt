@@ -1,17 +1,17 @@
-¡Saludaciones, nobles almas y honorables personas que estas letras contempláis!
+# Instrucciones de instalación y ejecución
 
-Sed bienvenidos a este humilde compendio de pergaminos... digo, archivos, preparados con diligencia para facilitar vuestra empresa.
+Bienvenido al presente Trabajo Práctico Integrador.
 
-Sabed que los manuscritos de lenguaje SQL han sido nombrados siguiendo el sagrado orden en que deben ser ejecutados. El número que antecede a cada nombre no es mero adorno, sino guía fiel para evitar el caos y la desgracia.
+Con el objetivo de facilitar la correcta instalación y funcionamiento del proyecto, los scripts SQL han sido organizados y numerados según el orden en que deben ejecutarse. La numeración que antecede al nombre de cada archivo indica la secuencia obligatoria de ejecución.
 
 El orden es el siguiente:
 
-1. create_biblioteca – Donde se erige el reino sobre el cual todo habrá de sostenerse.
-2. procedimientos_almacenados_biblioteca – Donde se otorgan las artes y saberes que servirán al reino.
-Y así sucesivamente... – Siguiendo siempre la numeración indicada en el nombre de cada archivo.
+1. **create_biblioteca** – Crea la base de datos y la estructura principal del sistema.
+2. **procedimientos_almacenados_biblioteca** – Genera los procedimientos almacenados utilizados por la aplicación.
+3. **Resto de los scripts** – Ejecutar respetando la numeración indicada en el nombre de cada archivo.
 
-Os exhorto, por el honor de vuestra estirpe y la estabilidad del reino, a no alterar este orden, pues hacerlo podría invocar errores, infortunios y otros males dignos de las crónicas más oscuras.
+Es importante mantener este orden, ya que algunos scripts dependen de objetos creados en los pasos anteriores. Alterar la secuencia podría provocar errores durante la instalación o inconsistencias en la base de datos.
 
-Que vuestra ejecución sea próspera, vuestros datos permanezcan íntegros y que los dioses de las bases de datos os concedan una instalación libre de excepciones.
+Se recomienda verificar que cada script finalice correctamente antes de continuar con el siguiente.
 
-Escrito con la mejor intención para todo caballero, dama o escudero que deba restaurar este noble proyecto.
+Esperamos que este material facilite la puesta en marcha del proyecto y contribuya a una correcta evaluación del Trabajo Práctico Integrador.

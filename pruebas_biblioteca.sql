@@ -41,7 +41,7 @@ GO
 
 PRINT '-- 2.1 Insertar ROL duplicado (debe fallar) --';
 EXEC SP_InsertarRol @NombreRol = 'Lector';
-PRINT '>> Esperado: Ya existe un rol con ese nombre';
+PRINT '>> Error esperado: Ya existe un rol con ese nombre';
 PRINT '';
 GO
 
@@ -53,12 +53,17 @@ PRINT '';
 GO
 
 PRINT '-- 2.3 Insertar USUARIO con email duplicado (debe fallar) --';
-EXEC sp_InsertarUsuario
-    @IDRol    = 3,
-    @Nombre   = 'Test',
-    @Apellido = 'Duplicado',
-    @Email    = 'luis.perez@mail.com';
-PRINT '>> Esperado: Ya existe un usuario registrado con ese email';
+BEGIN TRY
+    EXEC sp_InsertarUsuario
+        @IDRol    = 3,
+        @Nombre   = 'Test',
+        @Apellido = 'Duplicado',
+        @Email    = 'luis.perez@mail.com';
+    PRINT '>> Sin error (inesperado)';
+END TRY
+BEGIN CATCH
+    PRINT '>> Error capturado (50002): ' + ERROR_MESSAGE();
+END CATCH
 PRINT '';
 GO
 
@@ -75,12 +80,17 @@ PRINT '';
 GO
 
 PRINT '-- 2.5 Insertar USUARIO con ROL inexistente (debe fallar) --';
-EXEC sp_InsertarUsuario
-    @IDRol    = 999,
-    @Nombre   = 'X',
-    @Apellido = 'Y',
-    @Email    = 'noexiste.rol@mail.com';
-PRINT '>> Esperado: El rol especificado no existe';
+BEGIN TRY
+    EXEC sp_InsertarUsuario
+        @IDRol    = 999,
+        @Nombre   = 'X',
+        @Apellido = 'Y',
+        @Email    = 'noexiste.rol@mail.com';
+    PRINT '>> Sin error (inesperado)';
+END TRY
+BEGIN CATCH
+    PRINT '>> Error capturado (50001): ' + ERROR_MESSAGE();
+END CATCH
 PRINT '';
 GO
 
@@ -139,13 +149,18 @@ PRINT '';
 GO
 
 PRINT '-- 3.5 Actualizar USUARIO con email en uso (debe fallar) --';
-EXEC sp_ActualizarUsuario
-    @IDUsuario = 1,
-    @IDRol     = 2,
-    @Nombre    = 'Ana',
-    @Apellido  = 'Gomez',
-    @Email     = 'sofia.fernandez@mail.com';
-PRINT '>> Esperado: El email ya esta en uso por otro usuario';
+BEGIN TRY
+    EXEC sp_ActualizarUsuario
+        @IDUsuario = 1,
+        @IDRol     = 2,
+        @Nombre    = 'Ana',
+        @Apellido  = 'Gomez',
+        @Email     = 'sofia.fernandez@mail.com';
+    PRINT '>> Sin error (inesperado)';
+END TRY
+BEGIN CATCH
+    PRINT '>> Error capturado (50005): ' + ERROR_MESSAGE();
+END CATCH
 PRINT '';
 GO
 
@@ -157,25 +172,25 @@ GO
 
 PRINT '-- 4.1 Eliminar ROL con usuarios asociados (debe fallar) --';
 EXEC sp_EliminarRol @IDRol = 3;
-PRINT '>> Esperado: No se puede eliminar el rol porque tiene usuarios asociados';
+PRINT '>> Error esperado: No se puede eliminar el rol porque tiene usuarios asociados';
 PRINT '';
 GO
 
 PRINT '-- 4.2 Eliminar EDITORIAL con libros asociados (debe fallar) --';
 EXEC sp_EliminarEditorial @IDEditorial = 1;
-PRINT '>> Esperado: No se puede eliminar la editorial porque tiene libros asociados';
+PRINT '>> Error esperado: No se puede eliminar la editorial porque tiene libros asociados';
 PRINT '';
 GO
 
 PRINT '-- 4.3 Eliminar CATEGORIA con libros asociados (debe fallar) --';
 EXEC sp_EliminarCategoria @IDCategoria = 1;
-PRINT '>> Esperado: No se puede eliminar la categoria porque tiene libros asociados';
+PRINT '>> Error esperado: No se puede eliminar la categoria porque tiene libros asociados';
 PRINT '';
 GO
 
 PRINT '-- 4.4 Eliminar AUTOR con libros asociados (debe fallar) --';
 EXEC sp_EliminarAutor @IDAutor = 1;
-PRINT '>> Esperado: No se puede eliminar el autor porque tiene libros asociados';
+PRINT '>> Error esperado: No se puede eliminar el autor porque tiene libros asociados';
 PRINT '';
 GO
 
@@ -201,7 +216,7 @@ GO
 
 PRINT '-- 5.1 INSERT directo en PRESTAMO: trigger debe cambiar EJEMPLAR 5 a Prestado (2) --';
 INSERT INTO PRESTAMO (IDUsuario, IDEjemplar, FechaPrestamo, FechaDevolucionEstimada)
-VALUES (3, 5, '2026-06-29', '2026-07-13');
+VALUES (3, 5, CAST(GETDATE() AS DATE), DATEADD(DAY, 14, CAST(GETDATE() AS DATE)));
 DECLARE @IDPrestamoTest INT = SCOPE_IDENTITY();
 PRINT 'OK - Prestamo insertado, ID = ' + CAST(@IDPrestamoTest AS VARCHAR(10));
 PRINT '';
@@ -212,7 +227,7 @@ PRINT '';
 
 PRINT '-- 5.2 INSERT directo en DEVOLUCION: trigger debe liberar EJEMPLAR 5 a Disponible (1) --';
 INSERT INTO DEVOLUCION (IDPrestamo, FechaDevolucion, Observaciones)
-VALUES (@IDPrestamoTest, '2026-06-29', 'Prueba de trigger devolucion');
+VALUES (@IDPrestamoTest, CAST(GETDATE() AS DATE), 'Prueba de trigger devolucion');
 PRINT 'OK - Devolucion insertada';
 PRINT '';
 
@@ -259,14 +274,19 @@ PRINT 'SECCION 7: TESTS NEGATIVOS ADICIONALES';
 GO
 
 PRINT '-- 7.1 Eliminar USUARIO con prestamos activos (debe fallar) --';
-EXEC sp_EliminarUsuario @IDUsuario = 4;
-PRINT '>> Esperado: No se puede eliminar el usuario porque tiene prestamos asociados';
+BEGIN TRY
+    EXEC sp_EliminarUsuario @IDUsuario = 4;
+    PRINT '>> Sin error (inesperado)';
+END TRY
+BEGIN CATCH
+    PRINT '>> Error capturado (50007): ' + ERROR_MESSAGE();
+END CATCH
 PRINT '';
 GO
 
 PRINT '-- 7.2 Actualizar CATEGORIA con nombre duplicado (debe fallar) --';
 EXEC sp_ActualizarCategoria @IDCategoria = 6, @NombreCategoria = 'Novela';
-PRINT '>> Esperado: Ya existe otra categoria con ese nombre';
+PRINT '>> Error esperado: Ya existe otra categoria con ese nombre';
 PRINT '';
 GO
 
@@ -289,11 +309,12 @@ SELECT IDEjemplar, IDEstado, CodigoEjemplar FROM EJEMPLAR WHERE IDEjemplar = 1;
 PRINT '';
 GO
 
+-- 8.1 a 8.6 en un solo batch para mantener @IDP entre tests
 PRINT '-- 8.1 Insertar PRESTAMO valido (usuario 2, ejemplar 1) --';
 EXEC sp_InsertarPrestamo
     @IDUsuario               = 2,
     @IDEjemplar              = 1,
-    @FechaDevolucionEstimada = '2026-07-20';
+    @FechaDevolucionEstimada = DATEADD(DAY, 21, CAST(GETDATE() AS DATE));
 DECLARE @IDP INT = IDENT_CURRENT('PRESTAMO');
 PRINT 'OK - Prestamo creado, ID = ' + CAST(@IDP AS VARCHAR(10));
 PRINT '';
@@ -303,33 +324,48 @@ SELECT IDEjemplar, IDEstado, CodigoEjemplar FROM EJEMPLAR WHERE IDEjemplar = 1;
 PRINT '';
 
 PRINT '-- 8.2 Insertar PRESTAMO sobre ejemplar ya prestado (debe fallar) --';
-EXEC sp_InsertarPrestamo
-    @IDUsuario               = 3,
-    @IDEjemplar              = 1,
-    @FechaDevolucionEstimada = '2026-07-20';
-PRINT '>> Esperado: El ejemplar no esta disponible para prestamo';
+BEGIN TRY
+    EXEC sp_InsertarPrestamo
+        @IDUsuario               = 3,
+        @IDEjemplar              = 1,
+        @FechaDevolucionEstimada = DATEADD(DAY, 21, CAST(GETDATE() AS DATE));
+    PRINT '>> Sin error (inesperado)';
+END TRY
+BEGIN CATCH
+    PRINT '>> Error capturado (50102): ' + ERROR_MESSAGE();
+END CATCH
 PRINT '';
 
 PRINT '-- 8.3 Insertar PRESTAMO con usuario inexistente (debe fallar) --';
-EXEC sp_InsertarPrestamo
-    @IDUsuario               = 999,
-    @IDEjemplar              = 2,
-    @FechaDevolucionEstimada = '2026-07-20';
-PRINT '>> Esperado: El usuario especificado no existe';
+BEGIN TRY
+    EXEC sp_InsertarPrestamo
+        @IDUsuario               = 999,
+        @IDEjemplar              = 2,
+        @FechaDevolucionEstimada = DATEADD(DAY, 21, CAST(GETDATE() AS DATE));
+    PRINT '>> Sin error (inesperado)';
+END TRY
+BEGIN CATCH
+    PRINT '>> Error capturado (50100): ' + ERROR_MESSAGE();
+END CATCH
 PRINT '';
 
 PRINT '-- 8.4 Insertar PRESTAMO con ejemplar inexistente (debe fallar) --';
-EXEC sp_InsertarPrestamo
-    @IDUsuario               = 2,
-    @IDEjemplar              = 999,
-    @FechaDevolucionEstimada = '2026-07-20';
-PRINT '>> Esperado: El ejemplar especificado no existe';
+BEGIN TRY
+    EXEC sp_InsertarPrestamo
+        @IDUsuario               = 2,
+        @IDEjemplar              = 999,
+        @FechaDevolucionEstimada = DATEADD(DAY, 21, CAST(GETDATE() AS DATE));
+    PRINT '>> Sin error (inesperado)';
+END TRY
+BEGIN CATCH
+    PRINT '>> Error capturado (50101): ' + ERROR_MESSAGE();
+END CATCH
 PRINT '';
 
 PRINT '-- 8.5 Devolver el prestamo correctamente --';
 EXEC sp_InsertarDevolucion
     @IDPrestamo      = @IDP,
-    @FechaDevolucion = '2026-07-15',
+    @FechaDevolucion = CAST(GETDATE() AS DATE),
     @Observaciones   = 'Devuelto en buen estado';
 PRINT 'OK - Devolucion registrada';
 PRINT '';
@@ -339,27 +375,37 @@ SELECT IDEjemplar, IDEstado, CodigoEjemplar FROM EJEMPLAR WHERE IDEjemplar = 1;
 PRINT '';
 
 PRINT '-- 8.6 Intentar devolver el mismo prestamo dos veces (debe fallar) --';
-EXEC sp_InsertarDevolucion
-    @IDPrestamo      = @IDP,
-    @FechaDevolucion = '2026-07-15',
-    @Observaciones   = 'Doble devolucion';
-PRINT '>> Esperado: Este prestamo ya tiene una devolucion registrada';
+BEGIN TRY
+    EXEC sp_InsertarDevolucion
+        @IDPrestamo      = @IDP,
+        @FechaDevolucion = CAST(GETDATE() AS DATE),
+        @Observaciones   = 'Doble devolucion';
+    PRINT '>> Sin error (inesperado)';
+END TRY
+BEGIN CATCH
+    PRINT '>> Error capturado (50201): ' + ERROR_MESSAGE();
+END CATCH
 PRINT '';
 GO
 
 PRINT '-- 8.7 Devolucion con fecha anterior a la fecha del prestamo (debe fallar) --';
 EXEC sp_InsertarPrestamo
     @IDUsuario               = 3,
-    @IDEjemplar              = 2,
-    @FechaDevolucionEstimada = '2026-07-25';
+    @IDEjemplar              = 4,
+    @FechaDevolucionEstimada = DATEADD(DAY, 21, CAST(GETDATE() AS DATE));
 DECLARE @IDP2 INT = IDENT_CURRENT('PRESTAMO');
 PRINT 'Prestamo auxiliar creado, ID = ' + CAST(@IDP2 AS VARCHAR(10));
 
-EXEC sp_InsertarDevolucion
-    @IDPrestamo      = @IDP2,
-    @FechaDevolucion = '2020-01-01',
-    @Observaciones   = 'Fecha invalida';
-PRINT '>> Esperado: La fecha de devolucion no puede ser anterior a la fecha del prestamo';
+BEGIN TRY
+    EXEC sp_InsertarDevolucion
+        @IDPrestamo      = @IDP2,
+        @FechaDevolucion = '2020-01-01',
+        @Observaciones   = 'Fecha invalida';
+    PRINT '>> Sin error (inesperado)';
+END TRY
+BEGIN CATCH
+    PRINT '>> Error capturado (50202): ' + ERROR_MESSAGE();
+END CATCH
 PRINT '';
 GO
 
